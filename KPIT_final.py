@@ -2,6 +2,8 @@
 """
 Created on Mon Jan  1 20:33:15 2017
 
+This python file predicts passenger demand data from a given dataset
+
 @author: Sahil Basera
 """
 from  sklearn import preprocessing
@@ -15,12 +17,16 @@ from sklearn.ensemble import RandomForestRegressor
 
 
 
-
+#To encode the data
 le = preprocessing.LabelEncoder()
+
+#to read csv file
 data = pd.read_csv("KPIT_bus.csv")
 
-#X = data.drop(['Population' , 'day' , 'time'] , 1)
+#features
 X = data[['date' , 'time' , 'stop' , 'day']]
+
+#label
 Y = data['Population']
 
 #le= LabelEncoder()
@@ -35,25 +41,22 @@ le1.fit(["Sunday" , "Monday" , "Tuesday" , "Wednesday" , "Thursday" , "Friday" ,
 for col in X :
    if col =="day":
        X[col] = le1.transform(X[col])       
-       
+
+         
+#to only select features that give the best results
 X = SelectKBest(mutual_info_regression , k = 3).fit_transform(X , Y)
 min_max_scaler = preprocessing.MinMaxScaler()
 X = min_max_scaler.fit_transform(X)
 #X = preprocessing.scale(X)
 
-X_train , X_test , Y_train , Y_test = train_test_split(X , Y , test_size = 0.1 , random_state = 2)
+X_train , X_test , Y_train ,Y_test = train_test_split(X , Y , test_size = 0.1 , random_state = 2)
 
+#random forest regressor for prediction
 reg = RandomForestRegressor()
 reg = reg.fit(X_train , Y_train)
-#print(reg.predict(X_test))
+
+# to make predictions 
 Z = reg.predict(X_test)
-#for i in range(23):
+
+#to display the score
 print(reg.score(X_test , Y_test))    
-"""
-for i in range(23) :
-    print(Z[i])
-Z = Z/10
-Z = np.round(np.array(Z))
-#for i in range(23) :
-   # print(Z[i])
-"""
